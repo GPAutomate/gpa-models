@@ -92,11 +92,27 @@
     return currentUrl.pathname + currentUrl.search + currentUrl.hash;
   }
 
+  function isPlausibleReturnTarget(returnTarget) {
+    if (!returnTarget) {
+      return false;
+    }
+
+    if (returnTarget.startsWith('/') || returnTarget.startsWith('./') || returnTarget.startsWith('../')) {
+      return true;
+    }
+
+    return returnTarget.includes('/') || returnTarget.includes('.');
+  }
+
   function getSafeReturnTarget() {
     var currentUrl = new URL(window.location.href);
     var returnTarget = currentUrl.searchParams.get(returnParam);
 
     if (!returnTarget) {
+      return null;
+    }
+
+    if (!isPlausibleReturnTarget(returnTarget)) {
       return null;
     }
 
@@ -108,6 +124,10 @@
       }
 
       if (normalizePathname(resolvedUrl.pathname) === normalizePathname(currentUrl.pathname)) {
+        return null;
+      }
+
+      if (normalizePathname(resolvedUrl.pathname) === normalizePathname(getHubUrl().pathname)) {
         return null;
       }
 
