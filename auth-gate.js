@@ -38,23 +38,42 @@
     }
   }
 
-  function getCurrentFileName() {
-    var pathname = window.location.pathname || '';
-    var segments = pathname.split('/').filter(Boolean);
-
-    if (segments.length === 0) {
-      return 'index.html';
-    }
-
-    return segments[segments.length - 1] || 'index.html';
+  function getHubPath() {
+    return config.hubPath || './';
   }
 
-  function getHubPath() {
-    return config.hubPath || 'index.html';
+  function getHubUrl() {
+    return new URL(getHubPath(), window.location.href);
+  }
+
+  function normalizePathname(pathname) {
+    var normalized = pathname || '/';
+
+    if (normalized.endsWith('/index.html')) {
+      normalized = normalized.slice(0, -'index.html'.length);
+    }
+
+    if (!normalized.endsWith('/')) {
+      var lastSlashIndex = normalized.lastIndexOf('/');
+      var lastSegment = normalized.slice(lastSlashIndex + 1);
+
+      if (!lastSegment.includes('.')) {
+        normalized += '/';
+      }
+    }
+
+    return normalized || '/';
   }
 
   function isHubPage() {
-    return getCurrentFileName() === getHubPath();
+    return normalizePathname(window.location.pathname) === normalizePathname(getHubUrl().pathname);
+  }
+
+  function getCurrentReturnTarget() {
+    var currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.delete(ticketParam);
+    currentUrl.searchParams.delete(returnParam);
+    return currentUrl.pathname + currentUrl.search + currentUrl.hash;
   }
 
   function getSafeReturnTarget() {
@@ -72,7 +91,7 @@
         return null;
       }
 
-      if (resolvedUrl.pathname === currentUrl.pathname) {
+      if (normalizePathname(resolvedUrl.pathname) === normalizePathname(currentUrl.pathname)) {
         return null;
       }
 
@@ -182,8 +201,8 @@
 
   function redirectToHub() {
     var currentUrl = new URL(window.location.href);
-    var hubUrl = new URL(getHubPath(), window.location.href);
-    hubUrl.searchParams.set(returnParam, getCurrentFileName());
+    var hubUrl = getHubUrl();
+    hubUrl.searchParams.set(returnParam, getCurrentReturnTarget());
 
     if (currentUrl.searchParams.has(ticketParam)) {
       hubUrl.searchParams.set(ticketParam, currentUrl.searchParams.get(ticketParam));
