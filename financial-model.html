@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GP Practice Referral Programme — Financial Model</title>
+  <script>document.documentElement.dataset.authPending = '1';</script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
   <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
+  <script src="./auth-gate.js" defer></script>
   <style>
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+    html[data-auth-pending="1"] body{visibility:hidden;}
     .si{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:4px;padding:3px 6px;font-size:12px;}
     .si:focus{outline:1px solid rgba(255,255,255,0.5);}
     ::-webkit-scrollbar{width:5px;height:5px;}
