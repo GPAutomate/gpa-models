@@ -42,8 +42,24 @@
     return config.hubPath || './';
   }
 
+  function getScriptBaseUrl() {
+    var currentScript = document.currentScript;
+
+    if (currentScript && currentScript.src) {
+      return new URL('./', currentScript.src);
+    }
+
+    var scriptNode = document.querySelector('script[src$="/auth-gate.js"], script[src="./auth-gate.js"], script[src="auth-gate.js"]');
+
+    if (scriptNode && scriptNode.src) {
+      return new URL('./', scriptNode.src);
+    }
+
+    return new URL('./', window.location.href);
+  }
+
   function getHubUrl() {
-    return new URL(getHubPath(), window.location.href);
+    return new URL(getHubPath(), getScriptBaseUrl());
   }
 
   function normalizePathname(pathname) {
